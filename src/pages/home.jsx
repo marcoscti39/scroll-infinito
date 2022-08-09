@@ -6,35 +6,39 @@ import data from '../data'
 export default function Home() {
     const element = useRef(null)
     const [lorem, setLorem] = useState(data)
+    
 
     const makeMoreLorem = () =>{
-        setLorem([...lorem,...data])
+
+        setLorem((prev) => [...prev, ...data])
     }
        
     useEffect(() =>{
-        const interval = setInterval(() =>{
-            makeMoreLorem()
-        },1000)
-        let observer;
-
         let options = {
         root: null,
         rootMargin: "0px",
-        threshold: 0.4
+        threshold: 0
         };
-        const handleIntersect = (entries, observer) =>{
-                entries.forEach((entry) =>{
-                    if(entry.isIntersecting){
-                        console.log('true')
-                    }else{
-                        console.log('false')
-                    }
+        const handleIntersect = (entries) =>{
+            if(entries.some(entry => entry.isIntersecting)){
+                makeMoreLorem()
 
-                })
+            }
+                // entries.forEach((entry) =>{
+                //     if(entry.isIntersecting){
+                //         console.log('true')
+                //         makeMoreLorem()
+
+                //     }else{
+                //         console.log('false')
+                //     }
+
+                // })
 
         }
-        observer = new IntersectionObserver(handleIntersect, options);
+        const observer = new IntersectionObserver(handleIntersect, options);
         observer.observe(element.current);
+        return () => observer.unobserve(element.current)
 
 
     },[])
@@ -68,16 +72,18 @@ export default function Home() {
         </Center>
        
         
-        <Flex ref={element} as="main" direction="column" align="center">
+        <Flex as="main" direction="column" align="center">
             <LoremIpsum lorem={lorem}/>
-            
-            
-            
-
-            
-
-
         </Flex>
+
+        <Box 
+            ref={element} 
+            w="100%" 
+            height="1rem"
+            bg="red"
+            mt="3rem">
+
+        </Box>
         </>
        
     )
